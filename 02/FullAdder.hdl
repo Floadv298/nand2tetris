@@ -14,4 +14,17 @@ CHIP FullAdder {
 
     PARTS:
     // Put you code here:
+
+	//SUM calculation, funny enough, 3 XOR is exactly what we need 
+	//                 and what happen if we put 2 XOR's behind each
+	Xor (a=a, b=b, out=y1);
+	Xor (a=c, b=y1, out=sum);
+	
+	//Carry Calculation
+	//Any 2x 1 or 3x 1 will be Carry
+	And (a=a, b=b, out=y2);
+	And (a=a, b=c, out=y3);
+	And (a=b, b=c, out=y4);
+	Or (a=y2, b=y3, out=y5);
+	Or (a=y4, b=y5, out=carry);
 }
