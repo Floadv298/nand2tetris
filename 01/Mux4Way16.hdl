@@ -17,4 +17,17 @@ CHIP Mux4Way16 {
 
     PARTS:
     // Put your code here:
+	/* THIS IS WRONG
+    Mux16 (a[16]=a[16], b[16]=b[16], sel=sel[0], out[16]=c1[16]);
+    Mux16 (a[16]=c[16], b[16]=d[16], sel=sel[0], out[16]=c2[16]);
+    Mux16 (a[16]=c1[16], b[16]=c2[16], sel=sel[1], out[16]=out[16]);	
+	*/
+	
+	//Lesson
+	//Write like this!
+	//Only in the header you need to say if it is a bus.
+	//if you use it normal in the script no need to say.
+	Mux16 (a=a, b=b, sel=sel[0], out=c1);
+    Mux16 (a=c, b=d, sel=sel[0], out=c2);
+    Mux16 (a=c1, b=c2, sel=sel[1], out=out);	
 }
