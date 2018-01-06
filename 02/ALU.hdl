@@ -43,4 +43,34 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+	//Mux16 to switch for the input (true can be all high)
+	//Mux 16 to cascade the switch
+	//AND and ADD in parallel then Mux16
+	//negate the output, then Mux16 to previous or negated
+	//take care of x for zx and nx
+	
+	Mux16 (a=x, b=false, sel=zx, out=x1);
+	Not16 (in=x1, out=x2);
+	Mux16 (a=x1, b=x2, sel=nx, out=x3);
+	
+	//take care of y for zy and ny
+	Mux16 (a=y, b=false, sel=zy, out=y1);
+	Not16 (in=y1, out=y2);
+	Mux16 (a=y1, b=y2, sel=ny, out=y3);
+	
+	//Make AND and ADD
+	And16 (a=x3, b=y3, out=f1);
+	Add16 (a=x3, b=y3, out=f2);
+	Mux16 (a=f1, b=f2, sel=f, out=f3);
+	
+	Not16 (in=f3, out=no1);
+	Mux16 (a=f3, b=no1, sel=no, out=out);
+	
+		 //outputs
+		  //if out = 0 then 1
+		  //if MSB = 1 then 1
+		  
+	//if the MSB of our output is 1 we have a negative number
+	And (a=out[15], b=true, out=ng);
+	
 }
