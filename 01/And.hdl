@@ -15,4 +15,11 @@ CHIP And {
 
     PARTS:
     // Put your code here:
+	Nand(a=a, b=b, out=out1);
+	
+	//could also add a Nand directly
+	//Nand(a=out1, b=out1, out=out);
+	
+	//Follow recomendation to use previous build one
+	Not(in=out1, out=out);
 }
