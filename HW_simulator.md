@@ -28,4 +28,25 @@ b=true    --> that will 11..111b (dependign on the bus you apply
 ##Chip not found
 this can be e.g. a comment you forget to mark clearly or a chip *somewhere* in your code which does not exist or has a spelling problem
 
+##sub bus of an internal node may not be used 
+Section A.5.3 specifies how to handle buses and sub-buses.  
+The convention in this HDL is that you can connect to arbitrary sub-buses of chips that you use (even with overlap), 
+but that "pins" can not be sub-bused.   
+
+Example: suppose that you have a chip "C" with a 16-bit output bus that you want to connect to a 16-bit pin called sum, 
+but also to use the 7th bit to connect to a 1-bit pin called f, then you simply write: 
+
+C(... , out=sum, out[7]=f);
+
+One thing: If you have an input sinal you can use it like this:
+Or8Way(in=in[0..7], out=x); 
+
+But if you have an internal bus you can not:
+Or8Way(in=sum[0..7], out=x); // DISALLOWED 
+
+-->Workaround 
+something (... out[0..7]=sum);
+Or8Way(in=sum,..)
+
+
 
