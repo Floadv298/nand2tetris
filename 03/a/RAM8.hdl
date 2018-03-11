@@ -16,4 +16,21 @@ CHIP RAM8 {
 
     PARTS:
     // Put your code here:
+	
+	//start with the 8 Registers for an 8 RAM
+	Register (in=in, load=r0, out=rout0);
+	Register (in=in, load=r1, out=rout1);
+	Register (in=in, load=r2, out=rout2);
+	Register (in=in, load=r3, out=rout3);
+	Register (in=in, load=r4, out=rout4);
+	Register (in=in, load=r5, out=rout5);
+	Register (in=in, load=r6, out=rout6);
+	Register (in=in, load=r7, out=rout7);
+
+	//only allow output if there is a valid read? check simulator!
+	//problem still in logic....
+	Mux8Way16 (a=rout0, b=rout1, c=rout2, d=rout3, e=rout4, f=rout5, g=rout6, h=rout7, sel=address, out=out);
+	
+	//make address selection, put a 1 (true) on the selected register, use address, to simulate select
+	DMux8Way (in=load, sel=address, a=r0, b=r1, c=r2, d=r3, e=r4, f=r5, g=r6, h=r7);
 }

@@ -16,4 +16,6 @@ CHIP RAM512 {
 
     PARTS:
     // Put your code here:
+	
+	//see RAM64 ad copypaste
 }

@@ -16,5 +16,31 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    
+	//Main Register to keep data
+	Register (in=choiceout, load=loadnn, out=out, out=regout);
+	
+		//Inc
+	Add16 (a=regout, b[0]=true, out=rout0);
+	
+		//Load
+	And16 (a=in, b=in, out=rout1);
+	
+		//Reset
+	And16 (a=false, b= false, out=rout2);
+	
+	//Multiplexer to feed input of register (Inc, load, reset)
+	//          Inc       load     reset    reset    
+	Mux4Way16 (a=rout0, b=rout1, c=rout2, d=rout2, sel=mode, out=choiceout);
+	
+	Not (in=inc, out=m00);  			//Make Inc= 1 to 0 (use help bit m00)
+	Or (a=m00, b=load, out=modehelp);	//Make mode[0] to 0 or 1 dependent on inc or load
+	
+	//build the select for the mode together
+	Add16 (a=false, b[0]=modehelp, out=modehelp2);
+	Add16 (a=modehelp2, b[1]=reset, out[0..1]=mode);
+	
+	//Generate 1 if any action need to be done otherwise no action
+	Or (a=load, b=inc, out=m10);
+	Or (a=m10, b=reset, out=loadnn);
 }
