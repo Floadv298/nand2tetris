@@ -16,4 +16,15 @@ CHIP RAM16K {
 
     PARTS:
     // Put your code here:
+	RAM4K (in=in, load=r00, address=address[0..11], out=rout0);
+	RAM4K (in=in, load=r01, address=address[0..11], out=rout1);
+	RAM4K (in=in, load=r02, address=address[0..11], out=rout2);
+	RAM4K (in=in, load=r03, address=address[0..11], out=rout3);
+
+	//select which output based on selected Register
+	Mux4Way16 (a=rout0, b=rout1, c=rout2, d=rout3, sel=address[12..13], out=out);
+	
+	//make address selection, put a 1 (true) on the selected register, use address, to simulate select
+	DMux4Way (in=load, sel=address[12..13], a=r00, b=r01, c=r02, d=r03);
+
 }
