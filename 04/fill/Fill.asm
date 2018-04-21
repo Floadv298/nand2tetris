@@ -29,10 +29,12 @@
 //see blackfill just 0 instead of -1
 
 // Put your code here.
+	@2			//initialize to 0 and use later as comparison
+	M=0
 (LOOP)
 	@KBD		//load Keyboard content
 	D=M
-	@2
+	@2			
 	D=D-M		//compare to 0 (no key pressed)
 	@WHITEFILL
 	D;JEQ		//if 0-0 = 0 go to whitefill

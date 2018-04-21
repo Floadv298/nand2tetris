@@ -21,6 +21,9 @@
 //2)Real code 
 //initalize values
 
+	@R2		//set R2 to 0
+	M=0	
+	
 	@R0		//check if R0 = 0 and if yes jump to end
 	D=M
 	@0
@@ -35,8 +38,7 @@
 	@END
 	D;JEQ
 
-	@R2		//set R0 to 0
-	M=0	
+
 	
 (LOOP)
 	@R0		//load R0
