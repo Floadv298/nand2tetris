@@ -40,4 +40,14 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+	//use: ARegister, DRegister, Mux16, ALU, PC, 
+	//debug: use multiple outs in chips
+	
+	ALU(x=dregout,y=ymuxout ,zx= ,nx= , zy= ,ny= ,f= , no= ,
+		out=mux01in ,out=outM ,out=dregin , zr= ,ng= );
+	DRegister(in=dregin ,load= ,out=dregout);
+	Mux16(a=aregout ,b=inM , sel= , out=ymuxout);
+	ARegister(in=amuxout ,load= ,out=aregout, out=aregpc);
+	Mux16(a=mux01in ,b=instruction , sel= , out=amuxout);
+	PC(in=aregpc ,load= ,inc= ,reset= , out=pcout);
 }
