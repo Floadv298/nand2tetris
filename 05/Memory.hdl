@@ -28,4 +28,37 @@ CHIP Memory {
 
     PARTS:
     // Put your code here:
+
+	//only includes the User Writable space, there is no ROM inside (implement in CPU?)
+	//use as much as possible built-in chips
+	//RAM16K, Screen, Keyboard 
+	
+	// 15, 14, 13, 12, 
+	//  x   0   0   0  
+	//  x000 0000 0000 0000
+	//        RAM16K
+	// IN[16}, load, address[14], OUT[16]
+	//  x011 1111 1111 1111
+	//  x100 0000 0000 0000
+	//        Screen
+	// address[13], IN/OUT[16], load
+	//  x101 1111 1111 1111
+	//  x110 0000 0000 0000
+	//       Keyboard 
+	// out[16]
+	//  x11x xxxx xxxx xxxx  
+	//      *NOT VALID*
+	
+	RAM16K (in=in, load=r10, address=address[0..13], out=rout0);
+	Screen (in=in, load=r02, address=address[0..12], out=rout2);
+	Keyboard (out=rout3);
+	
+	//select which output based on selected Register
+	Mux4Way16 (a=rout0, b=rout0, c=rout2, d=rout3, sel=address[13..14], out=out);
+	
+	//make address selection, put a 1 (true) on the selected register, use address, to simulate select
+	DMux4Way (in=load, sel=address[13..14], a=r00, b=r01, c=r02); //d=r03
+	//                      don't use r03
+	
+	Or (a=r00, b=r01, out=r10);
 }
