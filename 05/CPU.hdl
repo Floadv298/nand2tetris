@@ -43,11 +43,33 @@ CHIP CPU {
 	//use: ARegister, DRegister, Mux16, ALU, PC, 
 	//debug: use multiple outs in chips
 	
-	ALU(x=dregout,y=ymuxout ,zx= ,nx= , zy= ,ny= ,f= , no= ,
-		out=mux01in ,out=outM ,out=dregin , zr= ,ng= );
-	DRegister(in=dregin ,load= ,out=dregout);
-	Mux16(a=aregout ,b=inM , sel= , out=ymuxout);
-	ARegister(in=amuxout ,load= ,out=aregout, out=aregpc);
-	Mux16(a=mux01in ,b=instruction , sel= , out=amuxout);
-	PC(in=aregpc ,load= ,inc= ,reset= , out=pcout);
+	ALU(x=dregout,y=ymuxout ,zx=instruction[11] ,nx=instruction[10] , zy=instruction[9] ,ny=instruction[8] ,f=instruction[7] , no=instruction[6] ,
+		out=mux01in ,out=outM ,out=dregin , zr=zrout ,ng=ngout );
+	DRegister(in=dregin ,load=instruction[4] ,out=dregout);
+	Mux16(a=aregout ,b=inM , sel=instruction[12] , out=ymuxout);
+	Or(a=ainstruction, b=instruction[5], out=aregload);
+	ARegister(in=amuxout ,load=aregload ,out=aregout, out=aregpc);
+	Mux16(a=mux01in ,b=instruction , sel=ainstruction , out=amuxout);
+	PC(in=aregpc ,load= ,inc= ,reset= , out=pc);
+	Or(a=instruction[3], b=instruction[3], out=writeM);
+	
+	//write logic part for control signals here
+	//ixxaccccccdddjjj
+	// i: 0 = A instruction, load to A-Reg, 1 = C instruction
+	// a = define if Register or Memory
+	//      a = 0 : Register ; a = 1 : Memory   
+	// cccccc =[11,10,9,8,7,6] compare
+	// ddd =[5,4,3] destinie
+	// jjj =[2,1,0] jump 
+	
+	//A-Instruction (if first bit is 0, load A-Reg)
+	Nand(a=instruction[15], b=instruction[15], out=ainstruction);
+	
+	//C-Instruction (if first bit is 1, do some of the logic stuff)
+	//a selection (use M-Reg or A-Reg), is done at Mux16 level above
+	//c5 (c[7]) goes to f of ALU , 	//c1 (c[11]) = zx , c2 = nx , c3 = zy , c4 = ny , c6 = no
+	
+	//To-Do jjj , when there is any jump, load A reg- and jump there, 
+	//mi the jump instructions with the ALU condition status output
+	And(a=zrout, b=ngout, out=posout); 		//calculate > 0
 }
