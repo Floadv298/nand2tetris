@@ -50,8 +50,13 @@ CHIP CPU {
 	Or(a=ainstruction, b=instruction[5], out=aregload);
 	ARegister(in=amuxout ,load=aregload ,out=aregout, out=aregpc);
 	Mux16(a=mux01in ,b=instruction , sel=ainstruction , out=amuxout);
-	PC(in=aregpc ,load= ,inc= ,reset= , out=pc);
+	PC(in=aregpc ,load=loadpc ,inc=pcinc ,reset=reset , out=pc);
 	Or(a=instruction[3], b=instruction[3], out=writeM);
+	
+	//PC logic, need a Bit to have the first reset to set inc to 1
+	//Idea: it is 0 by starting and get a 1 (true) all the time, then when reset come it loads the 1
+	//      help to have an clear state in the beginning
+	Bit(in=true, load=reset, out=pcinc);
 	
 	//write logic part for control signals here
 	//ixxaccccccdddjjj
@@ -60,7 +65,7 @@ CHIP CPU {
 	//      a = 0 : Register ; a = 1 : Memory   
 	// cccccc =[11,10,9,8,7,6] compare
 	// ddd =[5,4,3] destinie
-	// jjj =[2,1,0] jump 
+	// jjj =[2,1,0] j1, j2, j3   jump 
 	
 	//A-Instruction (if first bit is 0, load A-Reg)
 	Nand(a=instruction[15], b=instruction[15], out=ainstruction);
@@ -71,5 +76,32 @@ CHIP CPU {
 	
 	//To-Do jjj , when there is any jump, load A reg- and jump there, 
 	//mi the jump instructions with the ALU condition status output
-	And(a=zrout, b=ngout, out=posout); 		//calculate > 0
+	Not(in=zrout, out=zroutn);
+	Not(in=ngout, out=ngoutn);
+	And(a=zroutn, b=ngoutn, out=posout); 		//calculate > 0
+	
+	//JGT jump if > 0 
+	And(a=instruction[0], b=posout ,out=injgt);
+	//JEQ jump if = 0 
+	And(a=instruction[1], b=zrout ,out=injeq);
+	//JGE jump if >= 0
+	And(a=instruction[0], b=instruction[1], out=inj3j2);
+	Or(a=posout, b=zrout, out=ineg0);
+	And(a=inj3j2, b=ineg0 ,out=injge);
+	//JLT jump if < 0
+	And(a=instruction[2], b=ngout ,out=injlt);
+	//JNE jump if not 0
+	And(a=instruction[0], b=instruction[2], out=inj3j1);
+	And(a=inj3j1, b=zroutn ,out=injne);
+	//JLE jump if =< 0
+	And(a=instruction[1], b=instruction[2], out=inj2j1);
+	Or(a=zrout, b=ngout, out=ines0);  //if 0 or < 0 then in equal smaller 0 
+	And(a=inj2j1, b=ines0 ,out=injle);
+	//JMP just jump
+	And(a=instruction[0], b=inj2j1 ,out=injmp);
+	
+	//Or(a= ,b= ,out=);
+	
+	
+	Or8Way(in= ,out=loadpc); //3 way take all the 3 jumps together
 }
